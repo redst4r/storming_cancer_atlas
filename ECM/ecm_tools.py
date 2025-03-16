@@ -162,7 +162,7 @@ def ecm_lfc_via_deseq_python(A, design_factors, contrast, gene_min_counts=10):
             adata=pdata_ct.copy(),
             design_factors=design_factors,
             refit_cooks=True,
-            n_cpus=8,
+            n_cpus=16,
             ref_level = [var_of_iterest, ref_level]
         )
         dds.deseq2()
