@@ -9,8 +9,8 @@ from pydeseq2.ds import DeseqStats
 from scipy.stats import spearmanr
 
 import sys
-sys.path.append('/users/mstrasse/CRUK-code/')
-from crukiopy.colormaps import color_dict_coarse_celltype
+sys.path.append('..')
+from colormaps import color_dict_coarse_celltype
 
 colormap = pn.scale_color_manual(color_dict_coarse_celltype)
 theme =  pn.theme(figure_size=(5,9), panel_background=pn.element_rect(fill='white', alpha=.2), line=pn.element_line(color='grey'))
@@ -19,19 +19,16 @@ theme =  pn.theme(figure_size=(5,9), panel_background=pn.element_rect(fill='whit
 
 def plot_gene(genename, adata, grouping_var='Response', layer='vst_counts'):
     obs = adata.obs.copy()
-    # obs['gene'] = np.array(adata[:, genename].X.flatten())
     obs['gene'] = np.array(adata[:, genename].layers[layer].flatten())
-#     obs['ImmunoTherapy'] = obs['Treatment'].apply(lambda x: 'yes' if x =="DCF+avelumab" else 'no')
     p = pn.ggplot(obs, pn.aes(x=grouping_var, y='gene', label='samplename')) \
     + pn.geom_boxplot() +pn.geom_point(size=2, alpha=0.9)\
     + pn.geom_line(pn.aes(group='patient'), size=0.5 ) \
-    + pn.theme(figure_size=(5,3)) +pn.labs(y=genename) #+ pn.geom_label(pn.aes(color="ImmunoTherapy"), size=6)
+    + pn.theme(figure_size=(5,3)) +pn.labs(y=genename)
     return p
 
 def fold_change_pseudobulk_fixed(adata_bulk_de, gene_list, diagnosis1, diagnosis2):
     """
-    LFC is calcualted from normalized counts
-    actually its pretty weird:
+    LFC is calculated from normalized counts
     
     1 + normed_T
     ------------
@@ -119,13 +116,20 @@ def plot_fc_comparision(df, errorbars:bool=False):
     
     df['clipped_LFC'] = np.clip(df['log2FoldChange'], -5,5)
     aes = pn.aes('clipped_LFC', 'log2fc', label='index', xmin="clipped_LFC-lfcSE", xmax="clipped_LFC+lfcSE") # , color='padj<0.1'
-    p = pn.ggplot(df.reset_index(), aes)\
-    + pn.geom_text(size=6) + pn.geom_vline(xintercept=0) + pn.geom_hline(yintercept=0) + pn.geom_abline(slope=1, linetype='dashed')\
-    + pn.labs( 
-        title=f'Fold change in Proteomics vs Pseudobulk RNAseq\nrho={rho:.2f}(p={p:.1e})',
-        x='pseudobulk RNAseq log2(fold-change)', 
-        y='Proteomics log2(fold-change)'
-    )  + pn.lims(x=[-5,5])
+    p = (
+        pn.ggplot(df.reset_index())
+        + aes
+        + pn.geom_text(size=6) 
+        + pn.geom_vline(xintercept=0) 
+        + pn.geom_hline(yintercept=0)
+        + pn.geom_abline(slope=1, linetype='dashed')
+        + pn.labs( 
+            title=f'Fold change in Proteomics vs Pseudobulk RNAseq\nrho={rho:.2f}(p={p:.1e})',
+            x='pseudobulk RNAseq log2(fold-change)', 
+            y='Proteomics log2(fold-change)'
+        )  
+        + pn.lims(x=[-5,5])
+    )
 
     p =  p + pn.geom_errorbarh() if errorbars else p 
     

@@ -14,7 +14,7 @@ cmap_updown = {
     'nonsig':'grey'
 }
 
-def prep(df):
+def _prep(df):
     df['log2fc'] =  df['AVG Log2 Ratio']
     df['qvalue'] =  df['Qvalue']
     df['gene'] =  df['Genes']
@@ -29,18 +29,18 @@ def prep(df):
 
 def load_ECM_NE_vs_M():
     df_NE_vs_M = pd.read_csv('./data/ecm_DEG_NEvsM.csv')
-    return prep(df_NE_vs_M)
+    return _prep(df_NE_vs_M)
 
 
 def load_ECM_M_vs_T():
     df = pd.read_csv('./data/ecm_DEG_MvsT.csv')
-    return prep(df)
+    return _prep(df)
 
 
 def load_ECM_NE_vs_T():
     df = pd.read_csv('./data/ecm_DEG_NEvsT.csv')
     df=df[df['Comparison (group1/group2)'] =='Tumor / AdjN']
-    return prep(df)
+    return _prep(df)
 
 
 def gene_renames(df):
