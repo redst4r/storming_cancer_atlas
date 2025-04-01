@@ -4,6 +4,7 @@ from pathlib import Path
 DATADIR = '/proj/huang/tmp/atlas_tmp/'
 # TODO: fix urls to zenodo
 
+import muon as mu
 
 def load_original_data():
     url = "file:///proj/huang/gce_download/Jan2025_export_for_publication_01mito/EsophagusAtlas_primary_dataset.h5ad"
@@ -19,6 +20,15 @@ def load_merged_data():
     url = "file:///proj/huang/gce_download/Jan2025_export_for_publication_01mito/EsophagusAtlas_primary_and_validation_dataset.h5ad"
     adata = sc.read(Path(DATADIR) / "primary_and_validation.h5ad", backup_url=url)
     return adata
+
+def load_CODEX():
+    # url = "file:///proj/huang/gce_download/EsophagusAtlas_CODEX.h5mu"
+    url = "/proj/huang/gce_download/EsophagusAtlas_CODEX.h5mu"
+    adata = mu.read(url)
+    return adata
+
+
+
 
 def load_celltype(celltype):
 
